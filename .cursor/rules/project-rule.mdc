@@ -1,0 +1,115 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+
+1. General Principles
+   Encoding: All source files must be UTF-8 encoded.
+
+Indentation: Use 4 spaces for indentation. Tabs are strictly forbidden.
+
+Line Length: Keep lines under 120 characters to ensure readability.
+
+Code Style: Adhere to the Google Java Style Guide. Use an automated formatter (e.g., Spotless plugin, IDE settings) to maintain consistency across the team. Imports must be organized and unused imports removed.
+
+Philosophy: Prioritize code readability and team collaboration over premature optimization. Write code that is clear, explicit, and easy for others to understand.
+
+1.1. Lombok Usage
+Dependency Injection: Use @RequiredArgsConstructor for constructor-based dependency injection in services, controllers, etc.
+
+Data Objects (DTOs): Use @Getter, @Builder, and @NoArgsConstructor for Data Transfer Objects. @Setter is permissible if required for specific data-binding libraries, but the builder pattern is preferred.
+
+Domain Entities:
+
+Strictly forbid @Setter. State must be mutated through explicit, well-named business methods (e.g., updateOrderStatus(Status newStatus)).
+
+Use @ToString for easier debugging, but always exclude fields involved in bidirectional relationships to prevent StackOverflowError.
+
+Use @EqualsAndHashCode with caution. If required (e.g., for use in Set collections), use business key(s) instead of the primary key (id) and set callSuper = false.
+
+Logging: Employ @Slf4j for logging. Always use placeholder syntax to avoid unnecessary string concatenation (e.g., log.info("Processing user with ID: {}", userId);).
+
+2. Architectural Principles (Layered Architecture)
+   The application follows a standard layered architecture to ensure a clean separation of concerns.
+
+Core Packages: config, controller, service, repository, domain, dto.
+
+The Dependency Rule: Dependencies must flow in one direction: controller → service → repository.
+
+controller: Handles web requests and responses. Interacts with the service layer.
+
+service: Contains business logic. Interacts with the repository layer.
+
+repository: Handles data persistence.
+
+domain & dto: Represent data models and are used across layers, but they must not depend on outer layers.
+
+3. Layer Implementation Guide
+   3.1. Domain Layer (domain)
+   Contents: Core business models, primarily annotated with @Entity. These are the heart of the application.
+
+Behavior: Entities should encapsulate their own state and fundamental business logic (e.g., validation, state transitions), promoting a rich domain model.
+
+Annotations: Use @Getter, @Builder, and @NoArgsConstructor(access = AccessLevel.PROTECTED). Avoid @Setter at all costs to ensure data integrity and controlled state changes.
+
+3.2. DTO (Data Transfer Object) Layer (dto)
+Purpose: To decouple the service layer from the web layer and prevent exposing domain entities. Controllers should receive and return DTOs.
+
+Naming: Suffix with Request/Response for clarity (e.g., UserCreationRequest, ArticleResponse). For Thymeleaf forms, suffixes like Form or ViewModel are also acceptable (e.g., UserRegistrationForm).
+
+Validation: DTOs are the ideal place for input validation. Use Jakarta Bean Validation annotations (e.g., @NotBlank, @Email, @Size). Validation is triggered in the controller with @Valid.
+
+3.3. Repository Layer (repository)
+Purpose: Defines data persistence operations.
+
+Implementation: Create interfaces that extend Spring Data JPA's JpaRepository<EntityType, IDType>.
+
+Custom Queries: For complex queries, use the @Query annotation or a more powerful tool like QueryDSL.
+
+3.4. Service Layer (service)
+Purpose: Implements the application's core business logic.
+
+Naming: Classes should be named with a Service suffix (e.g., UserService).
+
+Annotations: Annotate the class with @Service. Use @Transactional(readOnly = true) at the class level to set a default transaction mode. Override with @Transactional for methods that modify state (create, update, delete).
+
+Responsibility: Services operate on domain entities but must communicate with the controller layer using DTOs. A mapping mechanism (e.g., a dedicated mapper class, MapStruct) is responsible for converting between domain objects and DTOs.
+
+3.5. Controller Layer (controller)
+Purpose: The entry point for all HTTP requests. Manages the request/response cycle and delegates business operations to the service layer.
+
+Annotations: Use @Controller for Thymeleaf applications that render views.
+
+Responsibility: Controllers must be "thin." Business logic is strictly forbidden. Their role is limited to:
+
+Receiving HTTP requests.
+
+Validating input via DTOs (@Valid).
+
+Calling the appropriate service method.
+
+Returning a response.
+
+Request Handling: Use @ModelAttribute to bind form data to a DTO.
+
+Return Type: Methods should return a String representing the view name. Data is passed to the view by adding attributes to the Model object.
+
+4. Exception Handling
+   Business Errors: Create custom, specific exceptions that extend RuntimeException for business rule violations (e.g., InsufficientStockException, UserNotFoundException).
+
+Global Handling: Use a centralized @ControllerAdvice class with @ExceptionHandler methods to handle exceptions globally. This ensures consistent error responses. For a Thymeleaf application, handler methods should return a String (the view name of an error page) and add necessary information to the Model.
+
+5. Testing
+   Unit Tests: Use JUnit 5 and Mockito to test services and other components in isolation from the database and web layer.
+
+Web Layer Tests: Use @WebMvcTest to test controllers in isolation. The service layer should be mocked to focus solely on web-layer logic (request handling, validation, view resolution).
+
+Integration Tests: Use @SpringBootTest to test the interaction between multiple layers, often involving a test database.
+
+6. Security
+   Configuration: Centralize all security rules in a SecurityConfig class that extends WebSecurityConfigurerAdapter or uses a SecurityFilterChain bean.
+
+CSRF Protection: Cross-Site Request Forgery protection is enabled by default and should remain active, especially for any state-changing POST, PUT, or DELETE requests initiated from Thymeleaf forms.
+
+Authorization: Use method-level security (@PreAuthorize) or configuration-based rules (http.authorizeHttpRequests(...)) to control access to resources based on user roles and permissions.
