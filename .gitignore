@@ -69,9 +69,10 @@ Thumbs.db
 ehthumbs.db
 Desktop.ini
 
-# Application properties (if contains sensitive data)
-# src/main/resources/application-prod.properties
-# src/main/resources/application-dev.properties
+# Application properties (contains sensitive data)
+src/main/resources/application.properties
+src/main/resources/application-prod.properties
+src/main/resources/application-dev.properties
 
 # Logs
 logs/
