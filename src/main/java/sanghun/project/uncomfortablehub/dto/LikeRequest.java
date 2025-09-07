@@ -2,6 +2,7 @@ package sanghun.project.uncomfortablehub.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,6 +16,7 @@ public class LikeRequest {
   private Long discomfortId;
 
   @NotBlank(message = "UUID는 필수입니다.")
+  @Size(max = 255, message = "UUID는 255자를 초과할 수 없습니다.")
   private String uuid;
 
   @Builder

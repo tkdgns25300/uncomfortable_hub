@@ -16,7 +16,7 @@ public class DiscomfortRequest {
   private String title;
 
   @NotBlank(message = "설명은 필수입니다.")
-  @Size(max = 1000, message = "설명은 1000자를 초과할 수 없습니다.")
+  @Size(max = 5000, message = "설명은 5000자를 초과할 수 없습니다.")
   private String description;
 
   @Builder

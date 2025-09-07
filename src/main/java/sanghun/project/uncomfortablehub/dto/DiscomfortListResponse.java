@@ -5,10 +5,10 @@ import lombok.Builder;
 import lombok.Getter;
 import sanghun.project.uncomfortablehub.domain.Discomfort;
 
-/** 불편함 조회 응답 DTO */
+/** 불편함 목록 조회 응답 DTO */
 @Getter
 @Builder
-public class DiscomfortResponse {
+public class DiscomfortListResponse {
 
   private Long id;
   private String title;
@@ -18,14 +18,15 @@ public class DiscomfortResponse {
   private long likeCount;
   private boolean hasLiked;
 
-  /** Discomfort 엔티티를 DiscomfortResponse로 변환합니다. (기본값) */
-  public static DiscomfortResponse from(Discomfort discomfort) {
+  /** Discomfort 엔티티를 DiscomfortListResponse로 변환합니다. (기본값) */
+  public static DiscomfortListResponse from(Discomfort discomfort) {
     return from(discomfort, 0, false);
   }
 
-  /** Discomfort 엔티티를 DiscomfortResponse로 변환합니다. (좋아요 정보 포함) */
-  public static DiscomfortResponse from(Discomfort discomfort, long likeCount, boolean hasLiked) {
-    return DiscomfortResponse.builder()
+  /** Discomfort 엔티티를 DiscomfortListResponse로 변환합니다. (좋아요 정보 포함) */
+  public static DiscomfortListResponse from(
+      Discomfort discomfort, long likeCount, boolean hasLiked) {
+    return DiscomfortListResponse.builder()
         .id(discomfort.getId())
         .title(discomfort.getTitle())
         .description(discomfort.getDescription())
