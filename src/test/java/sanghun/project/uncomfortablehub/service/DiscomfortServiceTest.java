@@ -14,7 +14,6 @@ import org.springframework.test.context.TestPropertySource;
 import sanghun.project.uncomfortablehub.dto.DiscomfortRequest;
 import sanghun.project.uncomfortablehub.dto.DiscomfortResponse;
 import sanghun.project.uncomfortablehub.repository.DiscomfortRepository;
-import sanghun.project.uncomfortablehub.service.LikeService;
 
 /** DiscomfortService 테스트 */
 @DataJpaTest
