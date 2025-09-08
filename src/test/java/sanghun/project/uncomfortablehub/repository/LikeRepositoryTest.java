@@ -80,10 +80,8 @@ class LikeRepositoryTest {
   @Test
   void 특정_불편함에_대한_좋아요_존재_여부_확인() {
     // when & then
-    assertThat(likeRepository.existsByDiscomfortIdAndUuid(discomfort1.getId(), "uuid-3"))
-        .isTrue();
-    assertThat(likeRepository.existsByDiscomfortIdAndUuid(discomfort1.getId(), "uuid-5"))
-        .isFalse();
+    assertThat(likeRepository.existsByDiscomfortIdAndUuid(discomfort1.getId(), "uuid-3")).isTrue();
+    assertThat(likeRepository.existsByDiscomfortIdAndUuid(discomfort1.getId(), "uuid-5")).isFalse();
   }
 
   @Test
@@ -133,9 +131,7 @@ class LikeRepositoryTest {
     likeRepository.deleteByDiscomfortIdAndUuid(discomfort1.getId(), "uuid-3");
 
     // then
-    assertThat(likeRepository.existsByDiscomfortIdAndUuid(discomfort1.getId(), "uuid-3"))
-        .isFalse();
-    assertThat(likeRepository.existsByDiscomfortIdAndUuid(discomfort1.getId(), "uuid-4"))
-        .isTrue();
+    assertThat(likeRepository.existsByDiscomfortIdAndUuid(discomfort1.getId(), "uuid-3")).isFalse();
+    assertThat(likeRepository.existsByDiscomfortIdAndUuid(discomfort1.getId(), "uuid-4")).isTrue();
   }
 }

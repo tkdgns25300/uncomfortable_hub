@@ -19,14 +19,19 @@ public class DiscomfortRequest {
   @Size(max = 5000, message = "설명은 5000자를 초과할 수 없습니다.")
   private String description;
 
+  @NotBlank(message = "UUID는 필수입니다.")
+  @Size(max = 255, message = "UUID는 255자를 초과할 수 없습니다.")
+  private String uuid;
+
   @Builder
-  private DiscomfortRequest(String title, String description) {
+  private DiscomfortRequest(String title, String description, String uuid) {
     this.title = title;
     this.description = description;
+    this.uuid = uuid;
   }
 
   /** 수정용 생성자 */
-  public static DiscomfortRequest forUpdate(String title, String description) {
-    return DiscomfortRequest.builder().title(title).description(description).build();
+  public static DiscomfortRequest forUpdate(String title, String description, String uuid) {
+    return DiscomfortRequest.builder().title(title).description(description).uuid(uuid).build();
   }
 }
