@@ -85,10 +85,30 @@ class UncomfortableHub {
         const title = document.getElementById("title").value.trim();
         const description = document.getElementById("description").value.trim();
 
+        // 폼 검증
         if (!title) {
             this.showAlert("제목을 입력해주세요.", "danger");
+            document.getElementById("title").focus();
             return;
         }
+
+        if (title.length > 255) {
+            this.showAlert("제목은 255자를 초과할 수 없습니다.", "danger");
+            document.getElementById("title").focus();
+            return;
+        }
+
+        if (description.length > 500) {
+            this.showAlert("설명은 500자를 초과할 수 없습니다.", "danger");
+            document.getElementById("description").focus();
+            return;
+        }
+
+        // 제출 버튼 비활성화
+        const submitBtn = document.querySelector('#discomfortForm button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>등록 중...';
 
         try {
             await this.createDiscomfort(title, description);
@@ -97,6 +117,10 @@ class UncomfortableHub {
         } catch (error) {
             console.error("불편함 등록 실패:", error);
             this.showAlert("불편함 등록에 실패했습니다. 다시 시도해주세요.", "danger");
+        } finally {
+            // 제출 버튼 복원
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
         }
     }
 
@@ -127,9 +151,12 @@ class UncomfortableHub {
      */
     async loadDiscomforts() {
         try {
+            // 로딩 상태 표시
+            this.showLoadingState();
+
             const response = await fetch(`/discomforts/api?uuid=${this.uuid}`);
             if (!response.ok) {
-                throw new Error("서버 응답 오류");
+                throw new Error(`서버 응답 오류: ${response.status}`);
             }
             const discomforts = await response.json();
             this.renderDiscomforts(discomforts);
@@ -137,6 +164,21 @@ class UncomfortableHub {
             console.error("불편함 목록 로드 실패:", error);
             this.renderErrorState();
         }
+    }
+
+    /**
+     * 로딩 상태 표시
+     */
+    showLoadingState() {
+        const container = document.getElementById("discomfortList");
+        container.innerHTML = `
+            <div class="col-12 text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-3 text-muted">불편함 목록을 불러오는 중...</p>
+            </div>
+        `;
     }
 
     /**
@@ -155,6 +197,26 @@ class UncomfortableHub {
 
         // 카드 클릭 이벤트 바인딩
         this.bindCardEvents();
+
+        // 애니메이션 효과 추가
+        this.addFadeInAnimation();
+    }
+
+    /**
+     * 페이드인 애니메이션 추가
+     */
+    addFadeInAnimation() {
+        const cards = document.querySelectorAll(".discomfort-card");
+        cards.forEach((card, index) => {
+            card.style.opacity = "0";
+            card.style.transform = "translateY(20px)";
+
+            setTimeout(() => {
+                card.style.transition = "opacity 0.5s ease, transform 0.5s ease";
+                card.style.opacity = "1";
+                card.style.transform = "translateY(0)";
+            }, index * 100); // 순차적으로 나타나도록
+        });
     }
 
     /**
@@ -268,7 +330,13 @@ class UncomfortableHub {
      */
     async toggleLike(discomfortId) {
         try {
-            const response = await fetch("/likes", {
+            // 현재 좋아요 상태 확인
+            const currentBtn = document.querySelector(`.like-btn[data-id="${discomfortId}"]`);
+            const isCurrentlyLiked = currentBtn?.classList.contains("liked");
+
+            const url = isCurrentlyLiked ? "/likes/cancel" : "/likes";
+
+            const response = await fetch(url, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -282,6 +350,12 @@ class UncomfortableHub {
             if (!response.ok) {
                 throw new Error("좋아요 처리 실패");
             }
+
+            const result = await response.json();
+
+            // 성공 메시지 표시
+            const message = isCurrentlyLiked ? "좋아요가 취소되었습니다." : "좋아요가 등록되었습니다.";
+            this.showAlert(message, "success");
 
             // 목록 새로고침
             await this.loadDiscomforts();
