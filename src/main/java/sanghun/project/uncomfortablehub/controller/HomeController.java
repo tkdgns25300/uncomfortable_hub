@@ -10,6 +10,6 @@ public class HomeController {
   /** 메인 페이지를 반환합니다. */
   @GetMapping("/")
   public String home() {
-    return "redirect:/discomforts";
+    return "index";
   }
 }

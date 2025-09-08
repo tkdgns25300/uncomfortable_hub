@@ -1,0 +1,430 @@
+/**
+ * Uncomfortable Hub 메인 애플리케이션
+ * AJAX 통신, UUID 관리, UI 이벤트 처리를 담당합니다.
+ */
+class UncomfortableHub {
+    constructor() {
+        this.uuid = this.getOrCreateUUID();
+        this.init();
+    }
+
+    /**
+     * 애플리케이션 초기화
+     */
+    init() {
+        this.loadDiscomforts();
+        this.bindEvents();
+        this.setupCharacterCounter();
+    }
+
+    /**
+     * UUID 관리 - 로컬 스토리지에서 가져오거나 새로 생성
+     */
+    getOrCreateUUID() {
+        let uuid = localStorage.getItem("uncomfortable_hub_uuid");
+        if (!uuid) {
+            uuid = this.generateUUID();
+            localStorage.setItem("uncomfortable_hub_uuid", uuid);
+        }
+        return uuid;
+    }
+
+    /**
+     * UUID 생성
+     */
+    generateUUID() {
+        return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+            const r = (Math.random() * 16) | 0;
+            const v = c === "x" ? r : (r & 0x3) | 0x8;
+            return v.toString(16);
+        });
+    }
+
+    /**
+     * 이벤트 바인딩
+     */
+    bindEvents() {
+        // 폼 제출 이벤트
+        document.getElementById("discomfortForm").addEventListener("submit", (e) => {
+            e.preventDefault();
+            this.handleFormSubmit();
+        });
+
+        // 모달 등록 버튼
+        document.getElementById("confirmRegister").addEventListener("click", () => {
+            this.handleModalRegister();
+        });
+    }
+
+    /**
+     * 문자 카운터 설정
+     */
+    setupCharacterCounter() {
+        const description = document.getElementById("description");
+        const charCount = document.getElementById("charCount");
+
+        description.addEventListener("input", () => {
+            const count = description.value.length;
+            charCount.textContent = count;
+
+            // 500자에 가까워지면 색상 변경
+            if (count > 450) {
+                charCount.style.color = "#dc3545";
+            } else if (count > 400) {
+                charCount.style.color = "#ffc107";
+            } else {
+                charCount.style.color = "#6c757d";
+            }
+        });
+    }
+
+    /**
+     * 폼 제출 처리
+     */
+    async handleFormSubmit() {
+        const title = document.getElementById("title").value.trim();
+        const description = document.getElementById("description").value.trim();
+
+        if (!title) {
+            this.showAlert("제목을 입력해주세요.", "danger");
+            return;
+        }
+
+        try {
+            await this.createDiscomfort(title, description);
+            this.clearForm();
+            this.showAlert("불편함이 성공적으로 등록되었습니다!", "success");
+        } catch (error) {
+            console.error("불편함 등록 실패:", error);
+            this.showAlert("불편함 등록에 실패했습니다. 다시 시도해주세요.", "danger");
+        }
+    }
+
+    /**
+     * 모달 등록 처리
+     */
+    async handleModalRegister() {
+        const title = document.getElementById("modalTitle").value.trim();
+        const description = document.getElementById("modalDescription").value.trim();
+
+        if (!title) {
+            this.showAlert("제목을 입력해주세요.", "danger");
+            return;
+        }
+
+        try {
+            await this.createDiscomfort(title, description);
+            this.closeModal("registerModal");
+            this.showAlert("불편함이 성공적으로 등록되었습니다!", "success");
+        } catch (error) {
+            console.error("불편함 등록 실패:", error);
+            this.showAlert("불편함 등록에 실패했습니다. 다시 시도해주세요.", "danger");
+        }
+    }
+
+    /**
+     * 불편함 목록 로드
+     */
+    async loadDiscomforts() {
+        try {
+            const response = await fetch(`/discomforts/api?uuid=${this.uuid}`);
+            if (!response.ok) {
+                throw new Error("서버 응답 오류");
+            }
+            const discomforts = await response.json();
+            this.renderDiscomforts(discomforts);
+        } catch (error) {
+            console.error("불편함 목록 로드 실패:", error);
+            this.renderErrorState();
+        }
+    }
+
+    /**
+     * 불편함 목록 렌더링
+     */
+    renderDiscomforts(discomforts) {
+        const container = document.getElementById("discomfortList");
+
+        if (discomforts.length === 0) {
+            container.innerHTML = this.getEmptyStateHTML();
+            return;
+        }
+
+        const html = discomforts.map((discomfort) => this.getDiscomfortCardHTML(discomfort)).join("");
+        container.innerHTML = html;
+
+        // 카드 클릭 이벤트 바인딩
+        this.bindCardEvents();
+    }
+
+    /**
+     * 불편함 카드 HTML 생성
+     */
+    getDiscomfortCardHTML(discomfort) {
+        const timeAgo = this.getTimeAgo(discomfort.createdAt);
+        const likedClass = discomfort.hasLiked ? "liked" : "";
+
+        return `
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card discomfort-card shadow-sm h-100" data-id="${discomfort.id}">
+                    <div class="card-body">
+                        <h5 class="card-title">${this.escapeHtml(discomfort.title)}</h5>
+                        <p class="card-text">${this.escapeHtml(discomfort.description)}</p>
+                        <div class="card-meta">
+                            <small class="text-muted">${timeAgo}</small>
+                            <button class="like-btn ${likedClass}" data-id="${discomfort.id}">
+                                <i class="fas fa-heart"></i>
+                                <span class="ms-1">${discomfort.likeCount}</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    /**
+     * 빈 상태 HTML
+     */
+    getEmptyStateHTML() {
+        return `
+            <div class="col-12">
+                <div class="empty-state">
+                    <i class="fas fa-frown-open"></i>
+                    <h4>아직 등록된 불편함이 없습니다</h4>
+                    <p>첫 번째 불편함을 공유해보세요!</p>
+                </div>
+            </div>
+        `;
+    }
+
+    /**
+     * 에러 상태 렌더링
+     */
+    renderErrorState() {
+        const container = document.getElementById("discomfortList");
+        container.innerHTML = `
+            <div class="col-12">
+                <div class="empty-state">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h4>불편함 목록을 불러올 수 없습니다</h4>
+                    <p>잠시 후 다시 시도해주세요.</p>
+                    <button class="btn btn-primary" onclick="location.reload()">새로고침</button>
+                </div>
+            </div>
+        `;
+    }
+
+    /**
+     * 카드 이벤트 바인딩
+     */
+    bindCardEvents() {
+        // 카드 클릭 이벤트 (상세 조회)
+        document.querySelectorAll(".discomfort-card").forEach((card) => {
+            card.addEventListener("click", (e) => {
+                if (!e.target.closest(".like-btn")) {
+                    const id = card.dataset.id;
+                    this.showDiscomfortDetail(id);
+                }
+            });
+        });
+
+        // 좋아요 버튼 클릭 이벤트
+        document.querySelectorAll(".like-btn").forEach((btn) => {
+            btn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                const id = btn.dataset.id;
+                this.toggleLike(id);
+            });
+        });
+    }
+
+    /**
+     * 불편함 등록
+     */
+    async createDiscomfort(title, description) {
+        const response = await fetch("/discomforts", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                title: title,
+                description: description,
+                uuid: this.uuid,
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error("등록 실패");
+        }
+
+        // 목록 새로고침
+        await this.loadDiscomforts();
+    }
+
+    /**
+     * 좋아요 토글
+     */
+    async toggleLike(discomfortId) {
+        try {
+            const response = await fetch("/likes", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    discomfortId: parseInt(discomfortId),
+                    uuid: this.uuid,
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error("좋아요 처리 실패");
+            }
+
+            // 목록 새로고침
+            await this.loadDiscomforts();
+        } catch (error) {
+            console.error("좋아요 처리 실패:", error);
+            this.showAlert("좋아요 처리에 실패했습니다.", "danger");
+        }
+    }
+
+    /**
+     * 불편함 상세 조회
+     */
+    async showDiscomfortDetail(id) {
+        try {
+            const response = await fetch(`/discomforts/api/${id}?uuid=${this.uuid}`);
+            if (!response.ok) {
+                throw new Error("상세 조회 실패");
+            }
+            const discomfort = await response.json();
+            this.renderDiscomfortDetail(discomfort);
+            this.openModal("detailModal");
+        } catch (error) {
+            console.error("상세 조회 실패:", error);
+            this.showAlert("상세 정보를 불러올 수 없습니다.", "danger");
+        }
+    }
+
+    /**
+     * 불편함 상세 내용 렌더링
+     */
+    renderDiscomfortDetail(discomfort) {
+        const timeAgo = this.getTimeAgo(discomfort.createdAt);
+        const likedClass = discomfort.hasLiked ? "liked" : "";
+
+        document.getElementById("detailContent").innerHTML = `
+            <div class="mb-3">
+                <h4 class="fw-bold">${this.escapeHtml(discomfort.title)}</h4>
+                <small class="text-muted">${timeAgo}</small>
+            </div>
+            <div class="mb-4">
+                <p class="lead">${this.escapeHtml(discomfort.description)}</p>
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+                <button class="like-btn ${likedClass}" data-id="${discomfort.id}">
+                    <i class="fas fa-heart"></i>
+                    <span class="ms-2">${discomfort.likeCount}명이 공감합니다</span>
+                </button>
+            </div>
+        `;
+
+        // 상세 모달의 좋아요 버튼 이벤트 바인딩
+        const likeBtn = document.querySelector("#detailContent .like-btn");
+        if (likeBtn) {
+            likeBtn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                this.toggleLike(discomfort.id);
+            });
+        }
+    }
+
+    /**
+     * 폼 초기화
+     */
+    clearForm() {
+        document.getElementById("title").value = "";
+        document.getElementById("description").value = "";
+        document.getElementById("charCount").textContent = "0";
+        document.getElementById("charCount").style.color = "#6c757d";
+    }
+
+    /**
+     * 모달 열기
+     */
+    openModal(modalId) {
+        const modal = new bootstrap.Modal(document.getElementById(modalId));
+        modal.show();
+    }
+
+    /**
+     * 모달 닫기
+     */
+    closeModal(modalId) {
+        const modal = bootstrap.Modal.getInstance(document.getElementById(modalId));
+        if (modal) {
+            modal.hide();
+        }
+    }
+
+    /**
+     * 알림 메시지 표시
+     */
+    showAlert(message, type = "info") {
+        const alertDiv = document.createElement("div");
+        alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+        alertDiv.style.cssText = "top: 20px; right: 20px; z-index: 9999; min-width: 300px;";
+        alertDiv.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+
+        document.body.appendChild(alertDiv);
+
+        // 3초 후 자동 제거
+        setTimeout(() => {
+            if (alertDiv.parentNode) {
+                alertDiv.parentNode.removeChild(alertDiv);
+            }
+        }, 3000);
+    }
+
+    /**
+     * 시간 경과 표시
+     */
+    getTimeAgo(dateString) {
+        const now = new Date();
+        const date = new Date(dateString);
+        const diffInSeconds = Math.floor((now - date) / 1000);
+
+        if (diffInSeconds < 60) {
+            return "방금 전";
+        } else if (diffInSeconds < 3600) {
+            const minutes = Math.floor(diffInSeconds / 60);
+            return `${minutes}분 전`;
+        } else if (diffInSeconds < 86400) {
+            const hours = Math.floor(diffInSeconds / 3600);
+            return `${hours}시간 전`;
+        } else {
+            const days = Math.floor(diffInSeconds / 86400);
+            return `${days}일 전`;
+        }
+    }
+
+    /**
+     * HTML 이스케이프
+     */
+    escapeHtml(text) {
+        const div = document.createElement("div");
+        div.textContent = text;
+        return div.innerHTML;
+    }
+}
+
+// 페이지 로드 시 애플리케이션 초기화
+document.addEventListener("DOMContentLoaded", () => {
+    new UncomfortableHub();
+});
