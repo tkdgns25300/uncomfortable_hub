@@ -4,6 +4,47 @@
 body {
     background-color: #f8f9fa;
     font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+}
+
+/* 컨테이너 최대 너비 및 중앙 정렬 */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* 헤더 스타일 */
+.display-4 {
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: #212529;
+    margin-bottom: 1rem;
+}
+
+.display-4 .text-primary {
+    color: #0d6efd !important;
+}
+
+.lead {
+    font-size: 1.25rem;
+    font-weight: 400;
+    color: #6c757d;
+    margin-bottom: 0;
+}
+
+/* 섹션 헤더 */
+.mb-4 h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #212529;
+    margin-bottom: 0.5rem;
+}
+
+.mb-4 p {
+    font-size: 1.1rem;
+    color: #6c757d;
+    margin-bottom: 0;
 }
 
 /* 카드 스타일 */
@@ -12,6 +53,8 @@ body {
     cursor: pointer;
     border: none;
     border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .discomfort-card:hover {
@@ -61,14 +104,49 @@ body {
 /* 빈 상태 메시지 */
 .empty-state {
     text-align: center;
-    padding: 3rem 1rem;
+    padding: 4rem 1rem;
     color: #6c757d;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .empty-state i {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-    opacity: 0.5;
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+    opacity: 0.6;
+    color: #dee2e6;
+}
+
+.empty-state h4 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+    font-size: 1.1rem;
+    color: #6c757d;
+    margin-bottom: 0;
+}
+
+/* 로딩 상태 */
+.loading-container {
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+    border-width: 0.3em;
 }
 
 /* 모달 스타일 */
@@ -89,45 +167,106 @@ body {
 }
 
 /* 폼 스타일 */
+.form-control {
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
 .form-control:focus {
     border-color: #0d6efd;
     box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    outline: none;
+}
+
+.form-control-lg {
+    padding: 1rem 1.25rem;
+    font-size: 1.125rem;
 }
 
 .form-label {
     font-weight: 600;
     color: #495057;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+}
+
+/* 등록 폼 카드 */
+.card.shadow-sm {
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    background: #ffffff;
+}
+
+.card-body {
+    padding: 2rem;
+}
+
+/* 문자 카운터 */
+.char-counter {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #6c757d;
 }
 
 /* 버튼 스타일 */
 .btn {
     border-radius: 8px;
-    font-weight: 500;
+    font-weight: 600;
     transition: all 0.2s ease;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+}
+
+.btn-lg {
+    padding: 1rem 2rem;
+    font-size: 1.125rem;
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%);
+    background: #0d6efd;
     border: none;
+    color: #ffffff;
 }
 
 .btn-primary:hover {
-    background: linear-gradient(135deg, #0b5ed7 0%, #0a58ca 100%);
+    background: #0b5ed7;
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
 }
 
+.btn-primary:focus {
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.btn-secondary {
+    background: #6c757d;
+    border: none;
+    color: #ffffff;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+    transform: translateY(-1px);
+}
+
 /* 카드 내용 스타일 */
 .card-title {
-    font-weight: 600;
+    font-weight: 700;
+    font-size: 1.25rem;
     color: #212529;
     margin-bottom: 0.75rem;
+    line-height: 1.4;
 }
 
 .card-text {
-    color: #6c757d;
+    color: #495057;
     line-height: 1.6;
-    margin-bottom: 1rem;
+    margin-bottom: 1.25rem;
+    font-size: 1rem;
 }
 
 .card-meta {
@@ -136,6 +275,43 @@ body {
     align-items: center;
     font-size: 0.875rem;
     color: #6c757d;
+    margin-top: auto;
+}
+
+.card-meta small {
+    font-weight: 500;
+}
+
+/* 좋아요 버튼 개선 */
+.like-btn {
+    border: none;
+    background: none;
+    color: #6c757d;
+    transition: color 0.2s ease, transform 0.1s ease;
+    padding: 0.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-weight: 500;
+}
+
+.like-btn:hover {
+    color: #dc3545;
+    transform: scale(1.05);
+}
+
+.like-btn.liked {
+    color: #dc3545;
+}
+
+.like-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.25);
+}
+
+.like-btn i {
+    font-size: 1rem;
 }
 
 /* 반응형 디자인 */
@@ -145,7 +321,19 @@ body {
     }
 
     .display-4 {
+        font-size: 2.5rem;
+    }
+
+    .lead {
+        font-size: 1.1rem;
+    }
+
+    .mb-4 h2 {
         font-size: 2rem;
+    }
+
+    .card-body {
+        padding: 1.5rem;
     }
 
     .discomfort-card {
@@ -156,6 +344,25 @@ body {
         flex-direction: column;
         align-items: flex-start;
         gap: 0.5rem;
+    }
+
+    .btn-lg {
+        padding: 0.875rem 1.5rem;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .display-4 {
+        font-size: 2rem;
+    }
+
+    .mb-4 h2 {
+        font-size: 1.75rem;
+    }
+
+    .card-body {
+        padding: 1.25rem;
     }
 }
 
