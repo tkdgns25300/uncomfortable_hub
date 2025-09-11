@@ -87,19 +87,19 @@ class UncomfortableHub {
 
         // 폼 검증
         if (!title) {
-            this.showAlert("제목을 입력해주세요.", "danger");
+            this.showAlert("Please enter a title.", "danger");
             document.getElementById("title").focus();
             return;
         }
 
         if (title.length > 255) {
-            this.showAlert("제목은 255자를 초과할 수 없습니다.", "danger");
+            this.showAlert("Title cannot exceed 255 characters.", "danger");
             document.getElementById("title").focus();
             return;
         }
 
         if (description.length > 500) {
-            this.showAlert("설명은 500자를 초과할 수 없습니다.", "danger");
+            this.showAlert("Description cannot exceed 500 characters.", "danger");
             document.getElementById("description").focus();
             return;
         }
@@ -108,15 +108,15 @@ class UncomfortableHub {
         const submitBtn = document.querySelector('#discomfortForm button[type="submit"]');
         const originalText = submitBtn.innerHTML;
         submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>등록 중...';
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Sharing...';
 
         try {
             await this.createDiscomfort(title, description);
             this.clearForm();
-            this.showAlert("불편함이 성공적으로 등록되었습니다!", "success");
+            this.showAlert("Discomfort shared successfully!", "success");
         } catch (error) {
-            console.error("불편함 등록 실패:", error);
-            this.showAlert("불편함 등록에 실패했습니다. 다시 시도해주세요.", "danger");
+            console.error("Discomfort registration failed:", error);
+            this.showAlert("Failed to share discomfort. Please try again.", "danger");
         } finally {
             // 제출 버튼 복원
             submitBtn.disabled = false;
@@ -132,17 +132,17 @@ class UncomfortableHub {
         const description = document.getElementById("modalDescription").value.trim();
 
         if (!title) {
-            this.showAlert("제목을 입력해주세요.", "danger");
+            this.showAlert("Please enter a title.", "danger");
             return;
         }
 
         try {
             await this.createDiscomfort(title, description);
             this.closeModal("registerModal");
-            this.showAlert("불편함이 성공적으로 등록되었습니다!", "success");
+            this.showAlert("Discomfort shared successfully!", "success");
         } catch (error) {
-            console.error("불편함 등록 실패:", error);
-            this.showAlert("불편함 등록에 실패했습니다. 다시 시도해주세요.", "danger");
+            console.error("Discomfort registration failed:", error);
+            this.showAlert("Failed to share discomfort. Please try again.", "danger");
         }
     }
 
@@ -156,12 +156,12 @@ class UncomfortableHub {
 
             const response = await fetch(`/discomforts/api?uuid=${this.uuid}`);
             if (!response.ok) {
-                throw new Error(`서버 응답 오류: ${response.status}`);
+                throw new Error(`Server response error: ${response.status}`);
             }
             const discomforts = await response.json();
             this.renderDiscomforts(discomforts);
         } catch (error) {
-            console.error("불편함 목록 로드 실패:", error);
+            console.error("Failed to load discomforts:", error);
             this.renderErrorState();
         }
     }
@@ -176,7 +176,7 @@ class UncomfortableHub {
                 <div class="spinner-border text-primary" role="status">
                     <span class="visually-hidden">Loading...</span>
                 </div>
-                <p class="mt-3 text-muted">불편함 목록을 불러오는 중...</p>
+                <p class="mt-3 text-muted">Loading discomforts...</p>
             </div>
         `;
     }
@@ -253,8 +253,8 @@ class UncomfortableHub {
             <div class="col-12">
                 <div class="empty-state">
                     <i class="fas fa-frown-open"></i>
-                    <h4>아직 등록된 불편함이 없습니다</h4>
-                    <p>첫 번째 불편함을 공유해보세요!</p>
+                    <h4>No discomforts shared yet</h4>
+                    <p>Be the first to share your uncomfortable moment!</p>
                 </div>
             </div>
         `;
@@ -269,9 +269,9 @@ class UncomfortableHub {
             <div class="col-12">
                 <div class="empty-state">
                     <i class="fas fa-exclamation-triangle"></i>
-                    <h4>불편함 목록을 불러올 수 없습니다</h4>
-                    <p>잠시 후 다시 시도해주세요.</p>
-                    <button class="btn btn-primary" onclick="location.reload()">새로고침</button>
+                    <h4>Unable to load discomforts</h4>
+                    <p>Please try again later.</p>
+                    <button class="btn btn-primary" onclick="location.reload()">Refresh</button>
                 </div>
             </div>
         `;
@@ -318,7 +318,7 @@ class UncomfortableHub {
         });
 
         if (!response.ok) {
-            throw new Error("등록 실패");
+            throw new Error("Registration failed");
         }
 
         // 목록 새로고침
@@ -348,20 +348,20 @@ class UncomfortableHub {
             });
 
             if (!response.ok) {
-                throw new Error("좋아요 처리 실패");
+                throw new Error("Like processing failed");
             }
 
             const result = await response.json();
 
             // 성공 메시지 표시
-            const message = isCurrentlyLiked ? "좋아요가 취소되었습니다." : "좋아요가 등록되었습니다.";
+            const message = isCurrentlyLiked ? "Like removed." : "Like added.";
             this.showAlert(message, "success");
 
             // 목록 새로고침
             await this.loadDiscomforts();
         } catch (error) {
-            console.error("좋아요 처리 실패:", error);
-            this.showAlert("좋아요 처리에 실패했습니다.", "danger");
+            console.error("Like processing failed:", error);
+            this.showAlert("Failed to process like.", "danger");
         }
     }
 
@@ -372,14 +372,14 @@ class UncomfortableHub {
         try {
             const response = await fetch(`/discomforts/api/${id}?uuid=${this.uuid}`);
             if (!response.ok) {
-                throw new Error("상세 조회 실패");
+                throw new Error("Detail view failed");
             }
             const discomfort = await response.json();
             this.renderDiscomfortDetail(discomfort);
             this.openModal("detailModal");
         } catch (error) {
-            console.error("상세 조회 실패:", error);
-            this.showAlert("상세 정보를 불러올 수 없습니다.", "danger");
+            console.error("Detail view failed:", error);
+            this.showAlert("Unable to load details.", "danger");
         }
     }
 
@@ -401,7 +401,7 @@ class UncomfortableHub {
             <div class="d-flex justify-content-between align-items-center">
                 <button class="like-btn ${likedClass}" data-id="${discomfort.id}">
                     <i class="fas fa-heart"></i>
-                    <span class="ms-2">${discomfort.likeCount}명이 공감합니다</span>
+                    <span class="ms-2">${discomfort.likeCount} people agree</span>
                 </button>
             </div>
         `;
@@ -475,16 +475,16 @@ class UncomfortableHub {
         const diffInSeconds = Math.floor((now - date) / 1000);
 
         if (diffInSeconds < 60) {
-            return "방금 전";
+            return "just now";
         } else if (diffInSeconds < 3600) {
             const minutes = Math.floor(diffInSeconds / 60);
-            return `${minutes}분 전`;
+            return `${minutes} minutes ago`;
         } else if (diffInSeconds < 86400) {
             const hours = Math.floor(diffInSeconds / 3600);
-            return `${hours}시간 전`;
+            return `${hours} hours ago`;
         } else {
             const days = Math.floor(diffInSeconds / 86400);
-            return `${days}일 전`;
+            return `${days} days ago`;
         }
     }
 
