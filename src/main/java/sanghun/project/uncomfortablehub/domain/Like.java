@@ -11,7 +11,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 /** 좋아요를 나타내는 도메인 엔티티 */
 @Entity
-@Table(name = "`like`")
+@Table(name = "likes")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)

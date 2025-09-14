@@ -11,7 +11,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 /** 불편함을 나타내는 도메인 엔티티 */
 @Entity
-@Table(name = "discomfort")
+@Table(name = "discomforts")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
