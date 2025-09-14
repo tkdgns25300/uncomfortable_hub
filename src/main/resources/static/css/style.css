@@ -16,6 +16,18 @@ body {
     padding: 0 20px;
 }
 
+/* 불편함 목록 컨테이너 - 부모 컨테이너를 벗어나도록 */
+#discomfortList {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100vw;
+    max-width: 1400px;
+}
+
 /* 헤더 스타일 */
 .display-4 {
     font-size: 3rem;
@@ -47,13 +59,21 @@ body {
     color: #2d3748;
     margin-bottom: 0.5rem;
     text-align: center;
+    white-space: nowrap;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .mb-4 p {
-    font-size: 1.1rem;
+    font-size: 1.125rem;
     color: #4a5568;
-    margin-bottom: 0;
+    margin-bottom: 2.5rem;
     text-align: center;
+    font-weight: 400;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 /* 카드 스타일 */
@@ -63,7 +83,17 @@ body {
     border: none;
     border-radius: 12px;
     background: #ffffff;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    margin-bottom: 1.25rem;
+    padding: 1.5rem;
+    width: 100%;
+    min-height: 120px;
+}
+
+/* 카드 컨테이너 - 한 줄에 하나씩 */
+#discomfortList .col-12 {
+    flex: 0 0 100%;
+    max-width: 100%;
 }
 
 .discomfort-card:hover {
@@ -113,31 +143,34 @@ body {
 /* 빈 상태 메시지 */
 .empty-state {
     text-align: center;
-    padding: 4rem 1rem;
+    padding: 6rem 2rem;
     color: #6c757d;
     background: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    max-width: 600px;
+    margin: 0 auto;
 }
 
 .empty-state i {
-    font-size: 4rem;
-    margin-bottom: 1.5rem;
+    font-size: 5rem;
+    margin-bottom: 2rem;
     opacity: 0.6;
     color: #dee2e6;
 }
 
 .empty-state h4 {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: #495057;
-    margin-bottom: 0.5rem;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #2d3748;
+    margin-bottom: 0.75rem;
 }
 
 .empty-state p {
-    font-size: 1.1rem;
-    color: #6c757d;
+    font-size: 1.125rem;
+    color: #4a5568;
     margin-bottom: 0;
+    font-weight: 400;
 }
 
 /* 로딩 상태 */
@@ -281,7 +314,7 @@ body {
 /* 카드 내용 스타일 */
 .card-title {
     font-weight: 700;
-    font-size: 1.25rem;
+    font-size: 1.375rem;
     color: #2d3748;
     margin-bottom: 0.75rem;
     line-height: 1.4;
@@ -290,8 +323,8 @@ body {
 .card-text {
     color: #4a5568;
     line-height: 1.6;
-    margin-bottom: 1.25rem;
-    font-size: 1rem;
+    margin-bottom: 1rem;
+    font-size: 1.125rem;
 }
 
 .card-meta {
@@ -300,7 +333,9 @@ body {
     align-items: center;
     font-size: 0.875rem;
     color: #a0aec0;
-    margin-top: auto;
+    margin-top: 0.75rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid #f1f5f9;
 }
 
 .card-meta small {
@@ -314,30 +349,33 @@ body {
     background: none;
     color: #a0aec0;
     transition: color 0.2s ease, transform 0.1s ease;
-    padding: 0.5rem;
-    border-radius: 50%;
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
     display: flex;
     align-items: center;
     gap: 0.25rem;
     font-weight: 500;
+    font-size: 0.875rem;
 }
 
 .like-btn:hover {
     color: #4263eb;
-    transform: scale(1.05);
+    background-color: #f8fafc;
+    transform: scale(1.02);
 }
 
 .like-btn.liked {
     color: #4263eb;
+    background-color: #f8fafc;
 }
 
 .like-btn:focus {
     outline: none;
-    box-shadow: 0 0 0 3px rgba(66, 99, 235, 0.1);
+    box-shadow: 0 0 0 2px rgba(66, 99, 235, 0.1);
 }
 
 .like-btn i {
-    font-size: 1rem;
+    font-size: 0.875rem;
 }
 
 /* 반응형 디자인 */
@@ -358,11 +396,27 @@ body {
         font-size: 2rem;
     }
 
-    .card-body {
-        padding: 1.5rem;
+    #discomfortList {
+        max-width: 100%;
+        padding: 0 1rem;
+        position: static;
+        left: auto;
+        transform: none;
+        width: 100%;
+    }
+
+    .mb-4 h2 {
+        white-space: normal;
+        font-size: 2rem;
+        max-width: 100%;
+    }
+
+    .mb-4 p {
+        max-width: 100%;
     }
 
     .discomfort-card {
+        padding: 1.25rem;
         margin-bottom: 1rem;
     }
 
@@ -385,10 +439,24 @@ body {
 
     .mb-4 h2 {
         font-size: 1.75rem;
+        white-space: normal;
+        max-width: 100%;
     }
 
-    .card-body {
-        padding: 1.25rem;
+    .mb-4 p {
+        max-width: 100%;
+    }
+
+    #discomfortList {
+        padding: 0 0.5rem;
+        position: static;
+        left: auto;
+        transform: none;
+        width: 100%;
+    }
+
+    .discomfort-card {
+        padding: 1rem;
     }
 }
 

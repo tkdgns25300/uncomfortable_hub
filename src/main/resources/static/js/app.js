@@ -227,8 +227,8 @@ class UncomfortableHub {
         const likedClass = discomfort.hasLiked ? "liked" : "";
 
         return `
-            <div class="col-12 col-md-6 col-lg-4">
-                <div class="card discomfort-card shadow-sm h-100" data-id="${discomfort.id}">
+            <div class="col-12">
+                <div class="card discomfort-card shadow-sm" data-id="${discomfort.id}">
                     <div class="card-body">
                         <h5 class="card-title">${this.escapeHtml(discomfort.title)}</h5>
                         <p class="card-text">${this.escapeHtml(discomfort.description)}</p>
