@@ -18,14 +18,14 @@ body {
 
 /* 불편함 목록 컨테이너 - 부모 컨테이너를 벗어나도록 */
 #discomfortList {
-    max-width: 1400px;
+    max-width: 1600px;
     margin: 0 auto;
     padding: 0 2rem;
     position: relative;
     left: 50%;
     transform: translateX(-50%);
     width: 100vw;
-    max-width: 1400px;
+    max-width: 1600px;
 }
 
 /* 헤더 스타일 */
