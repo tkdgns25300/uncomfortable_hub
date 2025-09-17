@@ -16,6 +16,13 @@ public interface DiscomfortRepository extends JpaRepository<Discomfort, Long> {
   /** 생성일시 기준으로 내림차순 정렬하여 모든 불편함을 조회합니다. */
   List<Discomfort> findAllByOrderByCreatedAtDesc();
 
+  /** 좋아요 많은순 + 최신순으로 모든 불편함을 조회합니다. */
+  @Query(
+      "SELECT d FROM Discomfort d LEFT JOIN Like l ON d.id = l.discomfortId "
+          + "GROUP BY d.id "
+          + "ORDER BY COUNT(l.id) DESC, d.createdAt DESC")
+  List<Discomfort> findAllOrderByLikeCountDescCreatedAtDesc();
+
   /** 생성일시 기준으로 내림차순 정렬하여 불편함을 페이징 조회합니다. */
   Page<Discomfort> findAllByOrderByCreatedAtDesc(Pageable pageable);
 

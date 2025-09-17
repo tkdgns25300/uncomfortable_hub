@@ -43,8 +43,8 @@ public class DiscomfortService {
   public List<DiscomfortListResponse> findAllDiscomforts(String userUuid) {
     log.info("Finding all discomforts for user: {}", userUuid);
 
-    // 1. 모든 불편함 조회 (생성일시 내림차순)
-    List<Discomfort> discomforts = discomfortRepository.findAllByOrderByCreatedAtDesc();
+    // 1. 모든 불편함 조회 (좋아요 많은순 + 최신순)
+    List<Discomfort> discomforts = discomfortRepository.findAllOrderByLikeCountDescCreatedAtDesc();
 
     // 2. 각 불편함에 대해 좋아요 정보를 포함하여 DTO 변환
     return discomforts.stream()
