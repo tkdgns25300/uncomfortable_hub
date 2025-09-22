@@ -24,8 +24,8 @@ body {
     position: relative;
     left: 50%;
     transform: translateX(-50%);
-    width: 100vw;
-    max-width: 1600px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 /* 헤더 스타일 */
@@ -552,6 +552,26 @@ body {
     color: white;
     font-size: 0.8rem;
     font-weight: 400;
+}
+
+/* QHD 이상 모니터에서 중앙 정렬 보장 */
+@media (min-width: 2560px) {
+    #discomfortList {
+        max-width: 1600px;
+        width: 1600px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+}
+
+/* 4K 모니터에서 중앙 정렬 보장 */
+@media (min-width: 3840px) {
+    #discomfortList {
+        max-width: 1600px;
+        width: 1600px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
 }
 
 /* Responsive Footer */
